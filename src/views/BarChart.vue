@@ -1,0 +1,187 @@
+<template>
+  <div class="chart-bar">
+    <RouterLink :to="{ name: 'Home' }" class="chart-bar__back-home"> 🔙 </RouterLink>
+    <div class="chart-bar__page-header">
+      <h1 class="chart-bar__title">長條圖</h1>
+      <div class="chart-bar__download-button">下載 Excel</div>
+    </div>
+    <div ref="chartContainer" class="chart-bar__container" />
+    <div>
+      <p class="chart-bar__data-title">Example 長條圖格式：</p>
+      <pre>
+        const chartData = [
+          {
+            key: 1,
+            label: '一月',
+            value: 23000,
+          },
+          {
+            key: 2,
+            label: '二月',
+            value: 32000,
+          },
+          {
+            key: 3,
+            label: '三月',
+            value: 28000,
+          },
+        ]
+      </pre>
+    </div>
+  </div>
+</template>
+<script setup lang="ts">
+import { onMounted, onUnmounted, nextTick, ref } from 'vue'
+import * as am5 from '@amcharts/amcharts5'
+import * as am5xy from '@amcharts/amcharts5/xy'
+// import am5themes_Animated from '@amcharts/amcharts5/themes/Animated'
+
+const chartContainer = ref<HTMLElement | null>(null)
+let root: am5.Root | null = null
+
+const createColumnChart = () => {
+  try {
+    root = am5.Root.new(chartContainer.value!)
+
+    // root.setThemes([am5themes_Animated.new(root)])
+
+    const chart = root.container.children.push(
+      am5xy.XYChart.new(root, {
+        panX: false,
+        panY: false,
+        wheelX: 'none',
+        wheelY: 'none',
+        pinchZoomX: true,
+      }),
+    )
+
+    const xAxis = chart.xAxes.push(
+      am5xy.CategoryAxis.new(root, {
+        categoryField: 'label',
+        renderer: am5xy.AxisRendererX.new(root, {
+          cellStartLocation: 0.1,
+          cellEndLocation: 0.9,
+        }),
+      }),
+    )
+
+    const yAxis = chart.yAxes.push(
+      am5xy.ValueAxis.new(root, {
+        renderer: am5xy.AxisRendererY.new(root, {}),
+      }),
+    )
+
+    const series = chart.series.push(
+      am5xy.ColumnSeries.new(root, {
+        name: '銷售額',
+        xAxis: xAxis,
+        yAxis: yAxis,
+        valueYField: 'value',
+        categoryXField: 'label',
+        tooltip: am5.Tooltip.new(root, {
+          labelText: '{labelX}: {valueY}',
+        }),
+      }),
+    )
+
+    const data = [
+      {
+        key: 1,
+        label: '一月',
+        value: 23000,
+      },
+      {
+        key: 2,
+        label: '二月',
+        value: 32000,
+      },
+      {
+        key: 3,
+        label: '三月',
+        value: 28000,
+      },
+      {
+        key: 4,
+        label: '四月',
+        value: 56000,
+      },
+      {
+        key: 5,
+        label: '五月',
+        value: 52300,
+      },
+      {
+        key: 6,
+        label: '六月',
+        value: 15800,
+      },
+    ]
+    xAxis.data.setAll(data)
+    series.data.setAll(data)
+
+    series.set('fill', am5.color('#74ABC7'))
+
+    //  series.appear(1000)
+    // chart.appear(1000, 100)
+  } catch (error) {
+    console.error('Error creating chart:', error)
+  }
+}
+
+onMounted(async () => {
+  await nextTick()
+
+  if (chartContainer.value) {
+    createColumnChart()
+  }
+})
+
+onUnmounted(() => {
+  if (root) {
+    root.dispose()
+    root = null
+  }
+})
+</script>
+<style lang="scss">
+.chart-bar {
+  &__back-home {
+    font-size: 30px;
+  }
+
+  &__title {
+    font-size: 20px;
+    margin: 20px;
+    font-weight: bold;
+  }
+
+  &__page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__download-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 40px;
+    background-color: #1b4965;
+    color: white;
+    border-radius: 4px;
+  }
+
+  &__container {
+    min-width: 1000px;
+    height: 500px;
+    margin-bottom: 100px;
+  }
+
+  &__data-title {
+    font-size: 16px;
+    padding-bottom: 16px;
+    font-weight: bold;
+  }
+}
+</style>

@@ -1,0 +1,34 @@
+@import './base.css';
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+}
+
+a {
+  text-decoration: none;
+  color: #62b6cb;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+  background-color: black;
+  color: white;
+  border-radius: 16px;
+  padding-bottom: 16px;
+  padding-top: 16px;
+}
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+
+  #app {
+    padding: 0 2rem;
+  }
+}
