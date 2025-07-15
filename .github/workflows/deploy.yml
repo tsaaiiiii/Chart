@@ -44,7 +44,7 @@ jobs:
           cache: 'pnpm' # 將 'npm' 改為 'pnpm'
       # 修改：使用 pnpm 安裝依賴
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
       # 修改：使用 pnpm 執行建置
       - name: Build
         run: pnpm run build
