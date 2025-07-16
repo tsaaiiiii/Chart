@@ -3,9 +3,10 @@
     <RouterLink :to="{ name: 'Home' }" class="chart-pie__back-home"> 🔙 </RouterLink>
     <div class="chart-pie__page-header">
       <h1 class="chart-pie__title">圓餅圖</h1>
-      <div class="chart-pie__download-button">下載 Excel</div>
+      <div class="chart-pie__download-button" @click="downloadExcel">下載 Excel</div>
     </div>
     <div ref="chartContainer" class="chart-pie__container" />
+    <Chart :data="chartData" :chart-type="CHART_TYPES.BAR"/>
     <div>
       <p class="chart-bar__data-title">Example 圓餅圖格式：</p>
       <pre>
@@ -49,27 +50,26 @@
 </template>
 <script setup lang="ts">
 import { onMounted, onUnmounted, nextTick, ref } from 'vue'
+import { CHART_TYPES } from '@/const';
 import * as am5 from '@amcharts/amcharts5'
 import * as am5percent from '@amcharts/amcharts5/percent'
+import Chart from '@/components/Chart/index.vue'
+import { tableDownload,transformChartDataToTable } from '@/utils/tableExcel'
+
 // import am5themes_Animated from '@amcharts/amcharts5/themes/Animated'
 
 const chartContainer = ref<HTMLElement | null>(null)
 let root: am5.Root | null = null
 
-onMounted(async () => {
-  await nextTick()
+  const chartData = [
+      { key: 1, label: 'Chrome', value: 65.2, color: '#4285f4' },
+      { key: 2, label: 'Safari', value: 18.8, color: '#34a853' },
+      { key: 3, label: 'Edge', value: 4.3, color: '#0078d4' },
+      { key: 4, label: 'Firefox', value: 3.4, color: '#ff9500' },
+      { key: 5, label: 'Opera', value: 2.2, color: '#ff6d01' },
+      { key: 6, label: '其他', value: 6.1, color: '#9aa0a6' },
+    ]
 
-  if (chartContainer.value) {
-    createPieChart()
-  }
-})
-
-onUnmounted(() => {
-  if (root) {
-    root.dispose()
-    root = null
-  }
-})
 
 const createPieChart = () => {
   try {
@@ -91,23 +91,16 @@ const createPieChart = () => {
       }),
     )
 
-    const data = [
-      { key: 1, label: 'Chrome', value: 65.2, color: '#4285f4' },
-      { key: 2, label: 'Safari', value: 18.8, color: '#34a853' },
-      { key: 3, label: 'Edge', value: 4.3, color: '#0078d4' },
-      { key: 4, label: 'Firefox', value: 3.4, color: '#ff9500' },
-      { key: 5, label: 'Opera', value: 2.2, color: '#ff6d01' },
-      { key: 6, label: '其他', value: 6.1, color: '#9aa0a6' },
-    ]
+
 
     series.set(
       'colors',
       am5.ColorSet.new(root, {
-        colors: data.map((item) => am5.color(item.color)),
+        colors: chartData.map((item) => am5.color(item.color)),
       }),
     )
 
-    series.data.setAll(data)
+    series.data.setAll(chartData)
 
     const legend = chart.children.push(
       am5.Legend.new(root, {
@@ -125,6 +118,27 @@ const createPieChart = () => {
     console.error('Error creating pie chart:', error)
   }
 }
+
+  const downloadExcel = () =>{
+  const tableData = transformChartDataToTable(chartData)
+    tableDownload(tableData.columns, tableData.rows, '圓餅圖')
+  }
+
+  onMounted(async () => {
+  await nextTick()
+
+  if (chartContainer.value) {
+    createPieChart()
+  }
+})
+
+onUnmounted(() => {
+  if (root) {
+    root.dispose()
+    root = null
+  }
+})
+
 </script>
 <style lang="scss">
 .chart-pie {
@@ -153,6 +167,7 @@ const createPieChart = () => {
     background-color: #1b4965;
     color: white;
     border-radius: 4px;
+    cursor: pointer;
   }
 
   &__container {

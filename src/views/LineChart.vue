@@ -3,9 +3,10 @@
     <RouterLink :to="{ name: 'Home' }" class="chart-line__back-home"> 🔙 </RouterLink>
     <div class="chart-line__page-header">
       <h1 class="chart-line__title">折線圖</h1>
-      <div class="chart-line__download-button">下載 Excel</div>
+      <div class="chart-line__download-button" @click="downloadExcel">下載 Excel</div>
     </div>
-    <div ref="chartContainer" class="chart-line__container" />
+    <Chart :data="chartData" :chart-type="CHART_TYPES.LINE"/>
+    <!-- <div ref="chartContainer" class="chart-line__container" /> -->
     <div>
       <p class="chart-line__data-title">Example 折線圖格式：</p>
       <pre>
@@ -34,102 +35,114 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, nextTick, ref } from 'vue'
-import * as am5 from '@amcharts/amcharts5'
-import * as am5xy from '@amcharts/amcharts5/xy'
+import { CHART_TYPES } from '@/const';
+import Chart from '@/components/Chart/index.vue'
+import { tableDownload,transformChartDataToTable } from '@/utils/tableExcel'
+
+// import { onMounted, onUnmounted, nextTick, ref } from 'vue'
+// import * as am5 from '@amcharts/amcharts5'
+// import * as am5xy from '@amcharts/amcharts5/xy'
 // import am5themes_Animated from '@amcharts/amcharts5/themes/Animated'
 
-const chartContainer = ref<HTMLElement | null>(null)
-let root: am5.Root | null = null
+const chartData = [
+  { key:1, label: '2025-01-10', value: 23000 },
+  { key:2, label: '2025-02-10', value: 32000 },
+  { key:3, label: '2025-03-10', value: 28000 },
+  { key:4, label: '2025-04-10', value: 45000 },
+  { key:5, label: '2025-05-10', value: 38000 },
+  { key:6, label: '2025-06-10', value: 52000 },
+]
 
-onMounted(async () => {
-  await nextTick()
+// const chartContainer = ref<HTMLElement | null>(null)
+// let root: am5.Root | null = null
 
-  if (chartContainer.value) {
-    createLineChart()
+// const createLineChart = () => {
+//   try {
+//     root = am5.Root.new(chartContainer.value!)
+//     // root.setThemes([am5themes_Animated.new(root)])
+
+//     const chart = root.container.children.push(
+//       am5xy.XYChart.new(root, {
+//         panX: false,
+//         panY: false,
+//         wheelX: 'none',
+//         wheelY: 'none',
+//         pinchZoomX: false,
+//       }),
+//     )
+
+//     const xAxis = chart.xAxes.push(
+//       am5xy.CategoryAxis.new(root, {
+//         categoryField: 'label',
+//         renderer: am5xy.AxisRendererX.new(root, {
+//           cellStartLocation: 0.1,
+//           cellEndLocation: 0.9,
+//         }),
+//       }),
+//     )
+
+//     const yAxis = chart.yAxes.push(
+//       am5xy.ValueAxis.new(root, {
+//         renderer: am5xy.AxisRendererY.new(root, {}),
+//       }),
+//     )
+
+//     const series = chart.series.push(
+//       am5xy.LineSeries.new(root, {
+//         xAxis: xAxis,
+//         yAxis: yAxis,
+//         valueYField: 'value',
+//         categoryXField: 'label',
+//         tooltip: am5.Tooltip.new(root, {
+//           labelText: '{categoryX}: {valueY}',
+//         }),
+//       }),
+//     )
+
+//     // series.strokes.template.setAll({
+//     //   strokeWidth: 3,
+//     //   stroke: am5.color('#74ABC7'),
+//     // })
+
+//     // series.bullets.push(() => {
+//     //   return am5.Bullet.new(root!, {
+//     //     sprite: am5.Circle.new(root!, {
+//     //       strokeWidth: 2,
+//     //       fill: am5.color('#1b4965'),
+//     //       radius: 5,
+//     //     }),
+//     //   })
+//     // })
+
+
+
+//     xAxis.data.setAll(chartData)
+//     series.data.setAll(chartData)
+//   } catch (error) {
+//     console.error('Error creating line chart:', error)
+//   }
+// }
+
+// onMounted(async () => {
+//   await nextTick()
+
+//   if (chartContainer.value) {
+//     createLineChart()
+//   }
+// })
+
+// onUnmounted(() => {
+//   if (root) {
+//     root.dispose()
+//     root = null
+//   }
+// })
+
+const downloadExcel = () =>{
+  const tableData = transformChartDataToTable(chartData)
+    tableDownload(tableData.columns, tableData.rows, '折線圖')
   }
-})
 
-onUnmounted(() => {
-  if (root) {
-    root.dispose()
-    root = null
-  }
-})
-
-const createLineChart = () => {
-  try {
-    root = am5.Root.new(chartContainer.value!)
-    // root.setThemes([am5themes_Animated.new(root)])
-
-    const chart = root.container.children.push(
-      am5xy.XYChart.new(root, {
-        panX: false,
-        panY: false,
-        wheelX: 'none',
-        wheelY: 'none',
-        pinchZoomX: false,
-      }),
-    )
-
-    const xAxis = chart.xAxes.push(
-      am5xy.CategoryAxis.new(root, {
-        categoryField: 'label',
-        renderer: am5xy.AxisRendererX.new(root, {
-          cellStartLocation: 0.1,
-          cellEndLocation: 0.9,
-        }),
-      }),
-    )
-
-    const yAxis = chart.yAxes.push(
-      am5xy.ValueAxis.new(root, {
-        renderer: am5xy.AxisRendererY.new(root, {}),
-      }),
-    )
-
-    const series = chart.series.push(
-      am5xy.LineSeries.new(root, {
-        xAxis: xAxis,
-        yAxis: yAxis,
-        valueYField: 'value',
-        categoryXField: 'label',
-        tooltip: am5.Tooltip.new(root, {
-          labelText: '{categoryX}: {valueY}',
-        }),
-      }),
-    )
-
-    series.strokes.template.setAll({
-      strokeWidth: 3,
-      stroke: am5.color('#74ABC7'),
-    })
-
-    series.bullets.push(() => {
-      return am5.Bullet.new(root!, {
-        sprite: am5.Circle.new(root!, {
-          strokeWidth: 2,
-          fill: am5.color('#1b4965'),
-          radius: 5,
-        }),
-      })
-    })
-
-    const data = [
-      { label: '2025-01-10', value: 23000 },
-      { label: '2025-02-10', value: 32000 },
-      { label: '2025-03-10', value: 28000 },
-      { label: '2025-04-10', value: 45000 },
-      { label: '2025-05-10', value: 38000 },
-      { label: '2025-06-10', value: 52000 },
-    ]
-
-    xAxis.data.setAll(data)
-    series.data.setAll(data)
-  } catch (error) {
-    console.error('Error creating line chart:', error)
-  }
-}
 </script>
 <style lang="scss">
 .chart-line {
@@ -158,13 +171,14 @@ const createLineChart = () => {
     background-color: #1b4965;
     color: white;
     border-radius: 4px;
+    cursor: pointer;
   }
 
-  &__container {
-    min-width: 1000px;
-    height: 600px;
-    margin-bottom: 100px;
-  }
+  // &__container {
+  //   min-width: 1000px;
+  //   height: 600px;
+  //   margin-bottom: 100px;
+  // }
 
   &__data-title {
     font-size: 16px;

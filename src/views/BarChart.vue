@@ -3,9 +3,12 @@
     <RouterLink :to="{ name: 'Home' }" class="chart-bar__back-home"> 🔙 </RouterLink>
     <div class="chart-bar__page-header">
       <h1 class="chart-bar__title">長條圖</h1>
-      <div class="chart-bar__download-button">下載 Excel</div>
+      <div class="chart-bar__download-button" @click="downloadExcel">
+        下載 Excel
+      </div>
     </div>
-    <div ref="chartContainer" class="chart-bar__container" />
+    <!-- <div ref="chartContainer" class="chart-bar__container" /> -->
+    <Chart :data="chartData" :chart-type="CHART_TYPES.BAR"/>
     <div>
       <p class="chart-bar__data-title">Example 長條圖格式：</p>
       <pre>
@@ -30,61 +33,17 @@
     </div>
   </div>
 </template>
-<script setup lang="ts">
-import { onMounted, onUnmounted, nextTick, ref } from 'vue'
-import * as am5 from '@amcharts/amcharts5'
-import * as am5xy from '@amcharts/amcharts5/xy'
+<script lang="ts" setup>
+import { CHART_TYPES } from '@/const';
+import Chart from '@/components/Chart/index.vue'
+import { tableDownload,transformChartDataToTable } from '@/utils/tableExcel'
+
+// import { onMounted, onUnmounted, nextTick, ref } from 'vue'
+// import * as am5 from '@amcharts/amcharts5'
+// import * as am5xy from '@amcharts/amcharts5/xy'
 // import am5themes_Animated from '@amcharts/amcharts5/themes/Animated'
 
-const chartContainer = ref<HTMLElement | null>(null)
-let root: am5.Root | null = null
-
-const createColumnChart = () => {
-  try {
-    root = am5.Root.new(chartContainer.value!)
-
-    // root.setThemes([am5themes_Animated.new(root)])
-
-    const chart = root.container.children.push(
-      am5xy.XYChart.new(root, {
-        panX: false,
-        panY: false,
-        wheelX: 'none',
-        wheelY: 'none',
-        pinchZoomX: true,
-      }),
-    )
-
-    const xAxis = chart.xAxes.push(
-      am5xy.CategoryAxis.new(root, {
-        categoryField: 'label',
-        renderer: am5xy.AxisRendererX.new(root, {
-          cellStartLocation: 0.1,
-          cellEndLocation: 0.9,
-        }),
-      }),
-    )
-
-    const yAxis = chart.yAxes.push(
-      am5xy.ValueAxis.new(root, {
-        renderer: am5xy.AxisRendererY.new(root, {}),
-      }),
-    )
-
-    const series = chart.series.push(
-      am5xy.ColumnSeries.new(root, {
-        name: '銷售額',
-        xAxis: xAxis,
-        yAxis: yAxis,
-        valueYField: 'value',
-        categoryXField: 'label',
-        tooltip: am5.Tooltip.new(root, {
-          labelText: '{labelX}: {valueY}',
-        }),
-      }),
-    )
-
-    const data = [
+  const chartData = [
       {
         key: 1,
         label: '一月',
@@ -116,32 +75,86 @@ const createColumnChart = () => {
         value: 15800,
       },
     ]
-    xAxis.data.setAll(data)
-    series.data.setAll(data)
 
-    series.set('fill', am5.color('#74ABC7'))
-
-    //  series.appear(1000)
-    // chart.appear(1000, 100)
-  } catch (error) {
-    console.error('Error creating chart:', error)
+  const downloadExcel = () =>{
+  const tableData = transformChartDataToTable(chartData)
+    tableDownload(tableData.columns, tableData.rows, '長條圖')
   }
-}
 
-onMounted(async () => {
-  await nextTick()
+// const chartContainer = ref<HTMLElement | null>(null)
+// let root: am5.Root | null = null
+// const createColumnChart = () => {
+//   try {
+//     root = am5.Root.new(chartContainer.value!)
 
-  if (chartContainer.value) {
-    createColumnChart()
-  }
-})
+//     // root.setThemes([am5themes_Animated.new(root)])
 
-onUnmounted(() => {
-  if (root) {
-    root.dispose()
-    root = null
-  }
-})
+//     const chart = root.container.children.push(
+//       am5xy.XYChart.new(root, {
+//         panX: false,
+//         panY: false,
+//         wheelX: 'none',
+//         wheelY: 'none',
+//         pinchZoomX: true,
+//       }),
+//     )
+
+//     const xAxis = chart.xAxes.push(
+//       am5xy.CategoryAxis.new(root, {
+//         categoryField: 'label',
+//         renderer: am5xy.AxisRendererX.new(root, {
+//           cellStartLocation: 0.1,
+//           cellEndLocation: 0.9,
+//         }),
+//       }),
+//     )
+
+//     const yAxis = chart.yAxes.push(
+//       am5xy.ValueAxis.new(root, {
+//         renderer: am5xy.AxisRendererY.new(root, {}),
+//       }),
+//     )
+
+//     const series = chart.series.push(
+//       am5xy.ColumnSeries.new(root, {
+//         name: '銷售額',
+//         xAxis: xAxis,
+//         yAxis: yAxis,
+//         valueYField: 'value',
+//         categoryXField: 'label',
+//         tooltip: am5.Tooltip.new(root, {
+//           labelText: '{labelX}: {valueY}',
+//         }),
+//       }),
+//     )
+
+
+//     xAxis.data.setAll(chartData)
+//     series.data.setAll(chartData)
+
+//     series.set('fill', am5.color('#74ABC7'))
+
+//     //  series.appear(1000)
+//     // chart.appear(1000, 100)
+//   } catch (error) {
+//     console.error('Error creating chart:', error)
+//   }
+// }
+
+// onMounted(async () => {
+//   await nextTick()
+
+//   if (chartContainer.value) {
+//     createColumnChart()
+//   }
+// })
+
+// onUnmounted(() => {
+//   if (root) {
+//     root.dispose()
+//     root = null
+//   }
+// })
 </script>
 <style lang="scss">
 .chart-bar {
@@ -170,13 +183,14 @@ onUnmounted(() => {
     background-color: #1b4965;
     color: white;
     border-radius: 4px;
+    cursor: pointer;
   }
 
-  &__container {
-    min-width: 1000px;
-    height: 500px;
-    margin-bottom: 100px;
-  }
+  // &__container {
+  //   min-width: 1000px;
+  //   height: 500px;
+  //   margin-bottom: 100px;
+  // }
 
   &__data-title {
     font-size: 16px;

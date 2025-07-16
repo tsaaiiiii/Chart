@@ -23,6 +23,10 @@ const chartData = [
     key: 'LineChart',
     title: '折線圖',
   },
+  {
+    key:'Table',
+    title:'表格'
+  }
 ]
 </script>
 <style lang="scss">

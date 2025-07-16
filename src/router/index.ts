@@ -23,6 +23,11 @@ const router = createRouter({
       name: 'LineChart',
       component: () => import('@/views/LineChart.vue'),
     },
+    {
+      path:'/table',
+      name:'Table',
+      component:()=>import('@/views/Table.vue')
+    }
   ],
 })
 
