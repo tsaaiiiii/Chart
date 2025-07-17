@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -24,10 +24,10 @@ const router = createRouter({
       component: () => import('@/views/LineChart.vue'),
     },
     {
-      path:'/table',
-      name:'Table',
-      component:()=>import('@/views/Table.vue')
-    }
+      path: '/table',
+      name: 'Table',
+      component: () => import('@/views/Table.vue'),
+    },
   ],
 })
 
