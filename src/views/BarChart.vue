@@ -3,83 +3,80 @@
     <RouterLink :to="{ name: 'Home' }" class="chart-bar__back-home"> 🔙 </RouterLink>
     <div class="chart-bar__page-header">
       <h1 class="chart-bar__title">長條圖</h1>
-      <div class="chart-bar__download-button" @click="downloadExcel">
-        下載 Excel
-      </div>
+      <div class="chart-bar__download-button" @click="downloadExcel">下載 Excel</div>
     </div>
     <!-- <div ref="chartContainer" class="chart-bar__container" /> -->
-    <Chart :data="chartData" :chart-type="CHART_TYPES.BAR"/>
+    <Chart :data="chartData" :chart-type="CHART_TYPES.BAR" />
     <div>
       <p class="chart-bar__data-title">Example 長條圖格式：</p>
       <pre>
-        const chartData = [
-          {
-            key: 1,
-            label: '一月',
-            value: 23000,
-          },
-          {
-            key: 2,
-            label: '二月',
-            value: 32000,
-          },
-          {
-            key: 3,
-            label: '三月',
-            value: 28000,
-          },
-        ]
+      {
+        chartType:'bar',
+        series: [
+          { name: '系列 A', field: 'valueA', color: '#74ABC7' },
+          { name: '系列 B', field: 'valueB', color: '#66B3FF' },
+          { name: '系列 C', field: 'valueC', color: '#FFA042' },
+        ],
+        chartValue: [
+          { label: '一月', valueA: 23000, valueB: 19000, valueC: 21000 },
+          { label: '二月', valueA: 32000, valueB: 28000, valueC: 30000 },
+          { label: '三月', valueA: 28000, valueB: 25000, valueC: 27000 },
+          { label: '四月', valueA: 30000, valueB: 52000, valueC: 54000 },
+          { label: '五月', valueA: 52300, valueB: 48000, valueC: 50000 },
+          { label: '六月', valueA: 15800, valueB: 12000, valueC: 14000 },
+        ],
+      },
       </pre>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { CHART_TYPES } from '@/const';
+import { CHART_TYPES } from '@/const'
 import Chart from '@/components/Chart/index.vue'
-import { tableDownload,transformChartDataToTable } from '@/utils/tableExcel'
+import { tableDownload, transformChartDataToTable } from '@/utils/tableExcel'
 
 // import { onMounted, onUnmounted, nextTick, ref } from 'vue'
 // import * as am5 from '@amcharts/amcharts5'
 // import * as am5xy from '@amcharts/amcharts5/xy'
 // import am5themes_Animated from '@amcharts/amcharts5/themes/Animated'
 
-  const chartData = [
-      {
-        key: 1,
-        label: '一月',
-        value: 23000,
-      },
-      {
-        key: 2,
-        label: '二月',
-        value: 32000,
-      },
-      {
-        key: 3,
-        label: '三月',
-        value: 28000,
-      },
-      {
-        key: 4,
-        label: '四月',
-        value: 56000,
-      },
-      {
-        key: 5,
-        label: '五月',
-        value: 52300,
-      },
-      {
-        key: 6,
-        label: '六月',
-        value: 15800,
-      },
-    ]
+const chartData = [
+  {
+    key: 1,
+    label: '一月',
+    value: 23000,
+  },
+  {
+    key: 2,
+    label: '二月',
+    value: 32000,
+  },
+  {
+    key: 3,
+    label: '三月',
+    value: 28000,
+  },
+  {
+    key: 4,
+    label: '四月',
+    value: 56000,
+  },
+  {
+    key: 5,
+    label: '五月',
+    value: 52300,
+  },
+  {
+    key: 6,
+    label: '六月',
+    value: 15800,
+  },
+]
 
-  const downloadExcel = () =>{
+const downloadExcel = () => {
   const tableData = transformChartDataToTable(chartData)
-    tableDownload(tableData.columns, tableData.rows, '長條圖')
-  }
+  tableDownload(tableData.columns, tableData.rows, '長條圖')
+}
 
 // const chartContainer = ref<HTMLElement | null>(null)
 // let root: am5.Root | null = null
@@ -127,7 +124,6 @@ import { tableDownload,transformChartDataToTable } from '@/utils/tableExcel'
 //         }),
 //       }),
 //     )
-
 
 //     xAxis.data.setAll(chartData)
 //     series.data.setAll(chartData)

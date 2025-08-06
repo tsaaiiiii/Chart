@@ -5,7 +5,7 @@
       <h1 class="chart-line__title">折線圖</h1>
       <div class="chart-line__download-button" @click="downloadExcel">下載 Excel</div>
     </div>
-    <Chart :data="chartData" :chart-type="CHART_TYPES.LINE"/>
+    <Chart :data="chartData" :chart-type="CHART_TYPES.LINE" />
     <!-- <div ref="chartContainer" class="chart-line__container" /> -->
     <div>
       <p class="chart-line__data-title">Example 折線圖格式：</p>
@@ -13,31 +13,29 @@
         // 由於折線圖的 x 軸未必會是時間相關，因此覺得一律使用字串處理～
         // 如果是時間，請後端轉換好給前端，不要使用 timestamp 比較好
 
-        const chartData = [
-          {
-            key: 1,
-            label: '2025-01-10',
-            value: 23000,
-          },
-          {
-            key: 2,
-            label: '2025-02-10',
-            value: 32000,
-          },
-          {
-            key: 3,
-            label: '2025-03-10',
-            value: 28000,
-          },
-        ]
+        // 折線圖
+      {
+        chartType:'line',
+        series: [
+          { name: '111111', field: 'typeAAA', color: '#D3A4FF' },
+        ],
+        chartValue: [
+          { label: '一月', typeAAA: 100 },
+          { label: '二月', typeAAA: 2000 },
+          { label: '三月', typeAAA: 1700 },
+          { label: '四月', typeAAA: 1200 },
+          { label: '五月', typeAAA: 1300 },
+          { label: '六月', typeAAA: 1800 },
+        ],
+      },
       </pre>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { CHART_TYPES } from '@/const';
+import { CHART_TYPES } from '@/const'
 import Chart from '@/components/Chart/index.vue'
-import { tableDownload,transformChartDataToTable } from '@/utils/tableExcel'
+import { tableDownload, transformChartDataToTable } from '@/utils/tableExcel'
 
 // import { onMounted, onUnmounted, nextTick, ref } from 'vue'
 // import * as am5 from '@amcharts/amcharts5'
@@ -45,12 +43,12 @@ import { tableDownload,transformChartDataToTable } from '@/utils/tableExcel'
 // import am5themes_Animated from '@amcharts/amcharts5/themes/Animated'
 
 const chartData = [
-  { key:1, label: '2025-01-10', value: 23000 },
-  { key:2, label: '2025-02-10', value: 32000 },
-  { key:3, label: '2025-03-10', value: 28000 },
-  { key:4, label: '2025-04-10', value: 45000 },
-  { key:5, label: '2025-05-10', value: 38000 },
-  { key:6, label: '2025-06-10', value: 52000 },
+  { key: 1, label: '2025-01-10', value: 23000 },
+  { key: 2, label: '2025-02-10', value: 32000 },
+  { key: 3, label: '2025-03-10', value: 28000 },
+  { key: 4, label: '2025-04-10', value: 45000 },
+  { key: 5, label: '2025-05-10', value: 38000 },
+  { key: 6, label: '2025-06-10', value: 52000 },
 ]
 
 // const chartContainer = ref<HTMLElement | null>(null)
@@ -114,8 +112,6 @@ const chartData = [
 //     //   })
 //     // })
 
-
-
 //     xAxis.data.setAll(chartData)
 //     series.data.setAll(chartData)
 //   } catch (error) {
@@ -138,11 +134,10 @@ const chartData = [
 //   }
 // })
 
-const downloadExcel = () =>{
+const downloadExcel = () => {
   const tableData = transformChartDataToTable(chartData)
-    tableDownload(tableData.columns, tableData.rows, '折線圖')
-  }
-
+  tableDownload(tableData.columns, tableData.rows, '折線圖')
+}
 </script>
 <style lang="scss">
 .chart-line {
